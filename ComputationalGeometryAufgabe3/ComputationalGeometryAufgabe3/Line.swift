@@ -13,13 +13,18 @@ struct Line: Equatable {
     let minX, maxX, minY, maxY: Double
     
     init(start: Point, end: Point) {
-        self.start = start
-        self.end = end
-        
         self.minX = min(start.x, end.x)
         self.maxX = max(start.x, end.x)
         self.minY = min(start.y, end.y)
         self.maxY = max(start.y, end.y)
+        
+        if start.x == minX {
+            self.start = start
+            self.end = end
+        } else {
+            self.start = end
+            self.end = start
+        }
     }
     
     func isLine() -> Bool {
@@ -30,7 +35,7 @@ struct Line: Equatable {
         return self.start.isPartOfBoundingBox(line: line) || self.end.isPartOfBoundingBox(line: line)
     }
     
-    func intersect(line: Line) -> Bool {
+    func hasIntersect(line: Line) -> Bool {
         
         if self.isLine() {
             if line.isLine(){
@@ -54,6 +59,14 @@ struct Line: Equatable {
                 return self.start == line.start
             }
         }
+    }
+    
+    func getIntersect(line: Line) -> Point {
+        let x = ((self.start.x * self.end.y - self.end.x * self.start.y) * (line.start.x - line.end.x) - (self.start.x - self.end.x) * (line.start.x * line.end.y - line.start.y * line.end.x)) / ((self.start.x - self.end.x) * (line.start.y - line.end.y) - (self.start.y - self.end.y) * (line.start.x - line.end.x))
+        
+        let y = ((self.start.x * self.end.y - self.end.x * self.start.y) * (line.start.y - line.end.y) - (self.start.y - self.end.y) * (line.start.x * line.end.y - line.start.y * line.end.x)) / ((self.start.x - self.end.x) * (line.start.y - line.end.y) - (self.start.y - self.end.y) * (line.start.x - line.end.x))
+        
+        return Point(x: x, y: y)
     }
     
     static func == (lhs: Line, rhs: Line) -> Bool {

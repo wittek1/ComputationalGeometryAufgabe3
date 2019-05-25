@@ -23,6 +23,7 @@ if argumentCount < 2 {
 let data = String.init(bytes: FileManager.default.contents(atPath: URL(string: arguments[1])!.path)!, encoding: .ascii)!
 
 var lines = [Line]()
+var eventQueue = AVLTree<Point ,Event>()
 
 for line in data.components(separatedBy: "\n") {
     if line == "" {
@@ -34,16 +35,85 @@ for line in data.components(separatedBy: "\n") {
         coordinates.append(Double(stringCoordinate)!)
     }
     
-    let line = Line(start: Point(x: coordinates[0], y: coordinates[1]), end: Point(x: coordinates[2], y: coordinates[3]))
+    let startX = coordinates[0]
+    let startY = coordinates[1]
+    let endX = coordinates[2]
+    let endY = coordinates[3]
+    
+    let startPoint = Point(x: startX, y: startY)
+    let endPoint = Point(x: endX, y: endY)
+
+    let line = Line(start: startPoint, end: endPoint)
+    
+    eventQueue.insert(
+        key: line.start,
+        payload: Event(
+            line: line,
+            eventType: EventType.LeftEndpoint
+        )
+    )
+    
+    eventQueue.insert(
+        key: line.end,
+        payload: Event(
+            line: line,
+            eventType: EventType.RightEndpoint
+        )
+    )
+    
     lines.append(line)
 }
 
 var intersectCounter = 0
 var intersects = "\n"
 
-let lineCount = lines.count
 
+var segmentList = AVLTree<Double, Line>()
 
+while eventQueue.size != 0 {
+    let node = eventQueue.root!.minimum()!
+    let event = node.payload
+    
+    if event!.eventType == EventType.LeftEndpoint {
+        let eventSegment = event!.line!
+        segmentList.insert(key: eventSegment.start.y, payload: eventSegment)
+        let eventSegmentNode = segmentList.search(key: eventSegment.start.y, node: segmentList.root)
+        
+        if let segmentANode = eventSegmentNode?.leftChild {
+            if eventSegment.hasIntersect(line: segmentANode.payload!) {
+                let intersect = eventSegment.getIntersect(line: segmentANode.payload!)
+                eventQueue.insert(key: intersect, payload: Event(line: nil, eventType: EventType.Intersection))
+            }
+        }
+        
+        if let segmentBNode = eventSegmentNode?.rightChild {
+            if eventSegment.hasIntersect(line: segmentBNode.payload!) {
+                let intersect = eventSegment.getIntersect(line: segmentBNode.payload!)
+                eventQueue.insert(key: intersect, payload: Event(line: nil, eventType: EventType.Intersection))
+            }
+        }
+
+    } else if event!.eventType == EventType.RightEndpoint {
+        let eventSegment = event!.line!
+        let eventSegmentNode = segmentList.search(key: eventSegment.start.y, node: segmentList.root)
+        
+        if let segmentANode = eventSegmentNode?.leftChild, let segmentBNode = eventSegmentNode?.rightChild {
+            if segmentANode.payload!.hasIntersect(line: segmentBNode.payload!) {
+                let intersect = segmentANode.payload!.getIntersect(line: segmentBNode.payload!)
+                if eventQueue.search(input: intersect) == nil {
+                    eventQueue.insert(key: intersect, payload: Event(line: nil, eventType: EventType.Intersection))
+                }
+            }
+        }
+        
+        segmentList.delete(key: eventSegment.start.y)
+        
+    } else {
+
+    }
+
+    eventQueue.delete(key: node.key)
+}
 
 let endTimer = CFAbsoluteTimeGetCurrent()
 
