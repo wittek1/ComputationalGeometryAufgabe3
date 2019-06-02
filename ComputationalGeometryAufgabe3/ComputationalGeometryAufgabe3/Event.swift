@@ -12,6 +12,7 @@ struct Event {
     let line: Line?
     let eventType: EventType
     let intersectingLines: (Line, Line)?
+    let intersect: Point?
 }
 
 enum EventType {

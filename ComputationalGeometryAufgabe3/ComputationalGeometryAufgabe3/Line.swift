@@ -11,9 +11,12 @@ import Foundation
 struct Line: Equatable, Comparable {
     let start, end: Point
     let minX, maxX, minY, maxY: Double
-    var key: Point
+    var key: KeyPoint
     
     init(start: Point, end: Point) {
+        assert(start != end)
+        assert(start.x != end.x)
+        
         self.minX = min(start.x, end.x)
         self.maxX = max(start.x, end.x)
         self.minY = min(start.y, end.y)
@@ -22,12 +25,14 @@ struct Line: Equatable, Comparable {
         if start.x == minX {
             self.start = start
             self.end = end
-            self.key = start
+            self.key = KeyPoint(x: start.x, y: start.y)
         } else {
             self.start = end
             self.end = start
-            self.key = end
+            self.key = KeyPoint(x: end.x, y: end.y)
         }
+        
+        
     }
     
     func isLine() -> Bool {

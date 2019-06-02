@@ -50,7 +50,8 @@ for line in data.components(separatedBy: "\n") {
         payload: Event(
             line: line,
             eventType: EventType.LeftEndpoint,
-            intersectingLines: nil
+            intersectingLines: nil,
+            intersect: nil
         )
     )
     
@@ -59,12 +60,13 @@ for line in data.components(separatedBy: "\n") {
         payload: Event(
             line: line,
             eventType: EventType.RightEndpoint,
-            intersectingLines: nil
+            intersectingLines: nil,
+            intersect: nil
         )
     )
 }
 
-var segmentList = AVLTree<Point, Line>()
+var segmentList = AVLTree<KeyPoint, Line>()
 var outputList = [Event]()
 
 while eventQueue.size != 0 {
@@ -76,18 +78,18 @@ while eventQueue.size != 0 {
         segmentList.insert(key: eventSegment.key, payload: eventSegment)
         let eventSegmentNode = segmentList.search(key: eventSegment.key, node: segmentList.root)
         
-        if let segmentANode = eventSegmentNode?.leftChild {
+        if let segmentANode = eventSegmentNode?.rightChild {
             if eventSegment.hasIntersect(line: segmentANode.payload!) {
                 let intersect = eventSegment.getIntersect(line: segmentANode.payload!)
-                let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (eventSegment, segmentANode.payload!))
+                let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (eventSegment, segmentANode.payload!), intersect: intersect)
                 eventQueue.insert(key: intersect, payload: payload)
             }
         }
         
-        if let segmentBNode = eventSegmentNode?.rightChild {
+        if let segmentBNode = eventSegmentNode?.leftChild {
             if eventSegment.hasIntersect(line: segmentBNode.payload!) {
                 let intersect = eventSegment.getIntersect(line: segmentBNode.payload!)
-                let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (eventSegment, segmentBNode.payload!))
+                let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (eventSegment, segmentBNode.payload!), intersect: intersect)
                 eventQueue.insert(key: intersect, payload: payload)
             }
         }
@@ -96,11 +98,11 @@ while eventQueue.size != 0 {
         let eventSegment = event.line!
         let eventSegmentNode = segmentList.search(key: eventSegment.key, node: segmentList.root)
         
-        if let segmentANode = eventSegmentNode?.leftChild, let segmentBNode = eventSegmentNode?.rightChild {
+        if let segmentANode = eventSegmentNode?.rightChild, let segmentBNode = eventSegmentNode?.leftChild {
             if segmentANode.payload!.hasIntersect(line: segmentBNode.payload!) {
                 let intersect = segmentANode.payload!.getIntersect(line: segmentBNode.payload!)
                 if eventQueue.search(input: intersect) == nil {
-                    let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (segmentANode.payload!, segmentBNode.payload!))
+                    let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (segmentANode.payload!, segmentBNode.payload!), intersect: intersect)
                     eventQueue.insert(key: intersect, payload: payload)
                 }
             }
@@ -124,7 +126,7 @@ while eventQueue.size != 0 {
             if segA.hasIntersect(line: segE2) {
                 let intersect = segA.getIntersect(line: segE2)
                 if eventQueue.search(input: intersect) == nil {
-                    let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (segA, segE2))
+                    let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (segA, segE2), intersect: intersect)
                     eventQueue.insert(key: intersect, payload: payload)
                 }
             }
@@ -134,7 +136,7 @@ while eventQueue.size != 0 {
             if segB.hasIntersect(line: segE1) {
                 let intersect = segB.getIntersect(line: segE1)
                 if eventQueue.search(input: intersect) == nil {
-                    let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (segB, segE1))
+                    let payload = Event(line: nil, eventType: EventType.Intersection, intersectingLines: (segB, segE1), intersect: intersect)
                     eventQueue.insert(key: intersect, payload: payload)
                 }
             }
@@ -153,4 +155,4 @@ let out = intersectsFound + timePassed
 
 print(out)
 
-print(outputList)
+print(outputList.map( { $0.intersect! } ))
