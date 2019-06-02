@@ -11,6 +11,7 @@ import Foundation
 struct Event {
     let line: Line?
     let eventType: EventType
+    let intersectingLines: (Line, Line)?
 }
 
 enum EventType {

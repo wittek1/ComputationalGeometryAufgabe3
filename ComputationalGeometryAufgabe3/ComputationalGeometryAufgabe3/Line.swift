@@ -8,9 +8,10 @@
 
 import Foundation
 
-struct Line: Equatable {
+struct Line: Equatable, Comparable {
     let start, end: Point
     let minX, maxX, minY, maxY: Double
+    var key: Point
     
     init(start: Point, end: Point) {
         self.minX = min(start.x, end.x)
@@ -21,9 +22,11 @@ struct Line: Equatable {
         if start.x == minX {
             self.start = start
             self.end = end
+            self.key = start
         } else {
             self.start = end
             self.end = start
+            self.key = end
         }
     }
     
@@ -71,5 +74,12 @@ struct Line: Equatable {
     
     static func == (lhs: Line, rhs: Line) -> Bool {
         return lhs.start == rhs.start && lhs.end == rhs.end
+    }
+    
+    static func < (lhs: Line, rhs: Line) -> Bool {
+        let sortLhs = lhs.key
+        let sortRhs = rhs.key
+        
+        return sortLhs.y == sortRhs.y ? sortLhs.x < sortRhs.x : sortLhs.y < sortRhs.y
     }
 }
