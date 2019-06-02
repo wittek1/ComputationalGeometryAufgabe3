@@ -25,7 +25,7 @@ public class TreeNode<Key: Comparable, Payload> {
   
   var payload: Payload?   // Value held by the node
   
-  var key: Key    // Node's name
+  fileprivate var key: Key    // Node's name
   internal var leftChild: Node?
   internal var rightChild: Node?
   fileprivate var height: Int
@@ -105,6 +105,30 @@ extension TreeNode {
   public func maximum() -> TreeNode? {
     return rightChild?.maximum() ?? self
   }
+    
+    public func rightNeighbor() -> TreeNode? {
+        if let rightChild = self.rightChild {
+            return rightChild.minimum()
+        }
+        
+        if self.isLeftChild {
+            return self.parent
+        } else {
+            return nil
+        }
+    }
+
+    public func leftNeighbor() -> TreeNode? {
+        if let leftChild = self.leftChild {
+            return leftChild.maximum()
+        }
+        
+        if self.isRightChild {
+            return self.parent
+        } else {
+            return nil
+        }
+    }
 }
 
 extension AVLTree {

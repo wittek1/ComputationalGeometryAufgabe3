@@ -42,7 +42,7 @@
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -64,6 +64,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "/Users/julianwittek/Downloads/s_1000_10.dat.txt"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/julianwittek/Downloads/s_test.dat.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

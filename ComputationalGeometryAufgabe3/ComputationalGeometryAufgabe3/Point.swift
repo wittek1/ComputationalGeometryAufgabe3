@@ -9,8 +9,6 @@
 import Foundation
 
 struct Point: Equatable, Comparable{
-
-    
     let x, y: Double
     
     init(x: Double, y: Double) {

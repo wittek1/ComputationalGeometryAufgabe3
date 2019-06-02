@@ -70,9 +70,12 @@ struct Line: Equatable, Comparable {
     }
     
     func getIntersect(line: Line) -> Point {
-        let x = ((self.start.x * self.end.y - self.end.x * self.start.y) * (line.start.x - line.end.x) - (self.start.x - self.end.x) * (line.start.x * line.end.y - line.start.y * line.end.x)) / ((self.start.x - self.end.x) * (line.start.y - line.end.y) - (self.start.y - self.end.y) * (line.start.x - line.end.x))
-        
-        let y = ((self.start.x * self.end.y - self.end.x * self.start.y) * (line.start.y - line.end.y) - (self.start.y - self.end.y) * (line.start.x * line.end.y - line.start.y * line.end.x)) / ((self.start.x - self.end.x) * (line.start.y - line.end.y) - (self.start.y - self.end.y) * (line.start.x - line.end.x))
+        let dividendX = (line.end.x - line.start.x) * (self.end.x * self.start.y - self.start.x * self.end.y) - (self.end.x - self.start.x) * (line.end.x * line.start.y - line.start.x * line.end.y)
+        let dividendY = (self.start.y - self.end.y) * (line.end.x * line.start.y - line.start.x * line.end.y) - (line.start.y - line.end.y) * (self.end.x * self.start.y - self.start.x * self.end.y)
+        let divisor = (line.end.y - line.start.y) * (self.end.x - self.start.x) - (self.end.y - self.start.y) * (line.end.x - line.start.x)
+            assert(divisor != 0)
+        let x = dividendX / divisor
+        let y = dividendY / divisor
         
         return Point(x: x, y: y)
     }
