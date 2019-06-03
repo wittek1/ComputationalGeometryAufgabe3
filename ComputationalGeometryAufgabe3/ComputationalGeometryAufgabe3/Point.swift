@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Point: Equatable, Comparable{
+struct Point: Equatable, Comparable, Hashable {
     let x, y: Double
     
     init(x: Double, y: Double) {
@@ -37,7 +37,7 @@ struct Point: Equatable, Comparable{
     }
 }
 
-struct KeyPoint: Equatable, Comparable {
+struct KeyPoint: Equatable, Comparable, Hashable {
     let x, y: Double
     
     init(x: Double, y: Double) {
@@ -50,6 +50,6 @@ struct KeyPoint: Equatable, Comparable {
     }
     
     static func < (lhs: KeyPoint, rhs: KeyPoint) -> Bool {
-        return lhs.y == rhs.y ? lhs.x < rhs.x : lhs.y < rhs.y
+        return lhs.y == rhs.y ? lhs.x > rhs.x : lhs.y > rhs.y
     }
 }
