@@ -102,7 +102,9 @@ while eventQueue.size != 0 {
     } else if event.eventType == EventType.RightEndpoint {
         let eventSegment = event.line!
         let currentKey = keyReferences[eventSegment.key] == nil ? eventSegment.key : keyReferences[eventSegment.key]!
-        keyReferences.removeValue(forKey: currentKey)
+        keyReferences.removeValue(forKey: eventSegment.key)
+
+        
         
         let eventSegmentNode = segmentList.search(key: currentKey, node: segmentList.root)
         
@@ -127,23 +129,59 @@ while eventQueue.size != 0 {
         let segE2 = event.intersectingLines!.1
 
         // swap in SL
-        let currentKeySegE1 = keyReferences[segE1.key] == nil ? segE1.key : keyReferences[segE1.key]!
-        let currentKeySegE2 = keyReferences[segE2.key] == nil ? segE2.key : keyReferences[segE2.key]!
+        let originalKeySegE1 = segE1.key
+        let originalKeySegE2 = segE2.key
         
-        keyReferences.removeValue(forKey: currentKeySegE1)
-        keyReferences.removeValue(forKey: currentKeySegE2)
-
-        segmentList.delete(key: currentKeySegE1)
-        segmentList.delete(key: currentKeySegE2)
-
-        keyReferences.updateValue(currentKeySegE1, forKey: currentKeySegE2)
-        keyReferences.updateValue(currentKeySegE2, forKey: currentKeySegE1)
-
-        segmentList.insert(key: currentKeySegE2, payload: segE1)
-        segmentList.insert(key: currentKeySegE1, payload: segE2)
+        if let referenceKeySegE1 = keyReferences[originalKeySegE1] {
+            keyReferences.removeValue(forKey: originalKeySegE1)
+            segmentList.delete(key: referenceKeySegE1)
+            
+            if let referenceKeySegE2 = keyReferences[originalKeySegE2] {
+                keyReferences.removeValue(forKey: originalKeySegE2)
+                segmentList.delete(key: referenceKeySegE2)
+                
+                keyReferences.updateValue(referenceKeySegE1, forKey: originalKeySegE2)
+                segmentList.insert(key: referenceKeySegE1, payload: segE2)
+                keyReferences.updateValue(referenceKeySegE2, forKey: originalKeySegE1)
+                segmentList.insert(key: referenceKeySegE2, payload: segE1)
+                
+            } else {
+                segmentList.delete(key: originalKeySegE2)
+                
+                keyReferences.updateValue(referenceKeySegE1, forKey: originalKeySegE2)
+                segmentList.insert(key: referenceKeySegE1, payload: segE2)
+                keyReferences.updateValue(originalKeySegE2, forKey: originalKeySegE1)
+                segmentList.insert(key: originalKeySegE2, payload: segE1)
+            }
+            
+        } else {
+            segmentList.delete(key: originalKeySegE1)
+            
+            if let referenceKeySegE2 = keyReferences[originalKeySegE2] {
+                keyReferences.removeValue(forKey: originalKeySegE2)
+                segmentList.delete(key: referenceKeySegE2)
+                
+                keyReferences.updateValue(originalKeySegE1, forKey: originalKeySegE2)
+                segmentList.insert(key: originalKeySegE1, payload: segE2)
+                keyReferences.updateValue(referenceKeySegE2, forKey: originalKeySegE1)
+                segmentList.insert(key: referenceKeySegE2, payload: segE1)
+                
+            } else {
+                segmentList.delete(key: originalKeySegE2)
+                
+                keyReferences.updateValue(originalKeySegE1, forKey: originalKeySegE2)
+                segmentList.insert(key: originalKeySegE1, payload: segE2)
+                keyReferences.updateValue(originalKeySegE2, forKey: originalKeySegE1)
+                segmentList.insert(key: originalKeySegE2, payload: segE1)
+            }
+        }
+        
         
         // TODO: Find and fix bug! something with references
+        let currentKeySegE1 = keyReferences[originalKeySegE2] == nil ? originalKeySegE2 : keyReferences[originalKeySegE2]!
+        let currentKeySegE2 = keyReferences[originalKeySegE1] == nil ? originalKeySegE1 : keyReferences[originalKeySegE1]!
 
+        
         if let segA = segmentList.search(key: currentKeySegE1, node: segmentList.root)?.leftNeighbor()?.payload {
             if segA.hasIntersect(line: segE2) {
                 let intersect = segA.getIntersect(line: segE2)
