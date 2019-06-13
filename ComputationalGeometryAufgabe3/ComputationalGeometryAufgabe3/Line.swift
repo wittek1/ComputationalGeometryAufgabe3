@@ -80,6 +80,10 @@ struct Line: Equatable, Comparable {
         return Point(x: x, y: y)
     }
     
+    func getYForX(x: Double) -> Double {
+        return ((self.end.y - self.start.y) / (self.end.x - self.start.x)) * (x - self.start.x) + self.start.y
+    }
+    
     static func == (lhs: Line, rhs: Line) -> Bool {
         return lhs.start == rhs.start && lhs.end == rhs.end
     }

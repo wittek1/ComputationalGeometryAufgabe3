@@ -104,8 +104,6 @@ while eventQueue.size != 0 {
         let currentKey = keyReferences[eventSegment.key] == nil ? eventSegment.key : keyReferences[eventSegment.key]!
         keyReferences.removeValue(forKey: eventSegment.key)
 
-        
-        
         let eventSegmentNode = segmentList.search(key: currentKey, node: segmentList.root)
         
         if let segmentANode = eventSegmentNode?.leftNeighbor(), let segmentBNode = eventSegmentNode?.rightNeighbor() {
@@ -176,8 +174,6 @@ while eventQueue.size != 0 {
             }
         }
         
-        
-        // TODO: Find and fix bug! something with references
         let currentKeySegE1 = keyReferences[originalKeySegE2] == nil ? originalKeySegE2 : keyReferences[originalKeySegE2]!
         let currentKeySegE2 = keyReferences[originalKeySegE1] == nil ? originalKeySegE1 : keyReferences[originalKeySegE1]!
 

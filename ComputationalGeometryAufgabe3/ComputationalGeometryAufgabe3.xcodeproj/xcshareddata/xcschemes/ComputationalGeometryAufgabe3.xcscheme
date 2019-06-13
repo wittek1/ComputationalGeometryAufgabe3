@@ -64,6 +64,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "/Users/julianwittek/Downloads/s_1000_10.dat.txt"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/julianwittek/Downloads/s_test_2.txt"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
