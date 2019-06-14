@@ -25,7 +25,7 @@ public class TreeNode<Key: Comparable, Payload> {
   
   var payload: Payload?   // Value held by the node
   
-  fileprivate var key: Key    // Node's name
+  public var key: Key    // Node's name
   internal var leftChild: Node?
   internal var rightChild: Node?
   fileprivate var height: Int

@@ -36,3 +36,18 @@ func getEventType(point: Point, line: Line) -> EventType {
         exit(-1)
     }
 }
+
+func updateSweepLine(tree: AVLTree<Double, Line>, x: Double) -> AVLTree<Double, Line> {
+    let updatedTree = AVLTree<Double, Line>()
+    
+    while tree.size != 0 {
+        if let root = tree.root, let node = root.minimum() {
+            let line = node.payload
+            let newKey = line!.getYForX(x: x)
+            tree.delete(key: node.key)
+            updatedTree.insert(key: newKey, payload: line)
+        }
+    }
+    
+    return updatedTree
+}
